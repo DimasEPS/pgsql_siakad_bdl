@@ -42,18 +42,18 @@ RETURNS TABLE (
     nilai_huruf nilai_huruf_enum,
     nilai_mutu NUMERIC(3,2),
     nilai_bobot NUMERIC(4,2),
-    semester VARCHAR(20)
+    semester TEXT
 ) AS $$
 BEGIN
     RETURN QUERY
     SELECT 
-        mk.kode_mk,
-        mk.nama_mk,
+        mk.kode_mk::VARCHAR(10),
+        mk.nama_mk::VARCHAR(100),
         mk.sks::INT,
-        kd.nilai_huruf,
-        kd.nilai_mutu,
-        kd.nilai_bobot,
-        CONCAT(s.tahun_ajaran, ' ', s.tipe_semester::text) as semester
+        kd.nilai_huruf::nilai_huruf_enum,
+        kd.nilai_mutu::NUMERIC(3,2),
+        kd.nilai_bobot::NUMERIC(4,2),
+        (s.tahun_ajaran || ' ' || s.tipe_semester::text)::TEXT as semester
     FROM krs_detail kd
     JOIN kelas k ON kd.id_kelas = k.id_kelas
     JOIN mata_kuliah mk ON k.id_mk = mk.id_mk
