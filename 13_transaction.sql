@@ -41,28 +41,3 @@ WHERE id_registrasi = (
 COMMIT;
 
 
--- Contoh transaksi untuk presensi dan update nilai mutu
-
-BEGIN;
-
--- 1. Mahasiswa melakukan presensi
-INSERT INTO presensi_mahasiswa (id_pertemuan, id_mahasiswa, status_kehadiran)
-VALUES (8, 15, 'hadir');
-
--- 2. Update nilai_mutu (contoh: tiap kehadiran = +5 poin)
-UPDATE krs_detail
-SET nilai_mutu = (
-  SELECT COUNT(*) * 5
-  FROM presensi_mahasiswa pm
-  JOIN presensi_pertemuan pp ON pm.id_pertemuan = pp.id_pertemuan
-  JOIN jadwal j ON pp.id_jadwal = j.id_jadwal
-  WHERE pm.id_mahasiswa = 15
-)
-WHERE id_kelas = (
-  SELECT j.id_kelas
-  FROM presensi_pertemuan pp
-  JOIN jadwal j ON pp.id_jadwal = j.id_jadwal
-  WHERE pp.id_pertemuan = 8
-);
-
-COMMIT;
