@@ -1,6 +1,7 @@
 -- ================================================
 -- FILE: 06_insert_krs_nilai.sql
--- DESCRIPTION: Insert data KRS, nilai, dan transkrip
+-- DESCRIPTION: Insert data KRS, nilai, aturan_penilaian, dan transkrip
+-- UPDATED: Now uses aturan_penilaian table instead of jenis enum
 -- ================================================
 
 -- Insert KRS untuk mahasiswa semester 1 (20 mahasiswa TI)
@@ -52,6 +53,49 @@ INSERT INTO krs (id_registrasi, id_semester, tanggal_pengajuan, status_validasi)
 (39, 1, '2023-08-15', true), -- Kedokteran
 (40, 1, '2023-08-15', true);
 
+-- Insert Aturan Penilaian untuk setiap kelas
+-- Jenis Nilai: 1=Tugas, 2=Quiz, 3=UTS, 4=UAS, 5=Praktikum
+-- Kelas 1-2: Algoritma Pemrograman TI-1A & TI-1B (3 SKS, ada praktikum)
+INSERT INTO aturan_penilaian (id_kelas, id_jenis_nilai, persentase, aktif) VALUES
+(1, 1, 20.00, true), -- Tugas 20%
+(1, 2, 15.00, true), -- Quiz 15%
+(1, 3, 30.00, true), -- UTS 30%
+(1, 4, 35.00, true), -- UAS 35%
+
+(2, 1, 20.00, true), -- Algoritma TI-1B (sama)
+(2, 2, 15.00, true),
+(2, 3, 30.00, true),
+(2, 4, 35.00, true),
+
+-- Kelas 3: Matematika Diskrit (3 SKS)
+(3, 1, 25.00, true), -- Tugas 25%
+(3, 2, 15.00, true), -- Quiz 15%
+(3, 3, 30.00, true), -- UTS 30%
+(3, 4, 30.00, true), -- UAS 30%
+
+-- Kelas 4-19: Aturan penilaian standar untuk kelas lainnya
+(4, 1, 25.00, true), (4, 2, 15.00, true), (4, 3, 30.00, true), (4, 4, 30.00, true),
+(5, 1, 25.00, true), (5, 2, 15.00, true), (5, 3, 30.00, true), (5, 4, 30.00, true),
+(6, 1, 25.00, true), (6, 2, 15.00, true), (6, 3, 30.00, true), (6, 4, 30.00, true),
+(7, 1, 25.00, true), (7, 2, 15.00, true), (7, 3, 30.00, true), (7, 4, 30.00, true),
+(8, 1, 20.00, true), (8, 2, 15.00, true), (8, 3, 30.00, true), (8, 4, 35.00, true),
+(9, 1, 20.00, true), (9, 2, 15.00, true), (9, 3, 30.00, true), (9, 4, 35.00, true),
+(10, 1, 20.00, true), (10, 2, 15.00, true), (10, 3, 30.00, true), (10, 4, 35.00, true),
+(11, 1, 25.00, true), (11, 2, 15.00, true), (11, 3, 30.00, true), (11, 4, 30.00, true),
+(12, 1, 25.00, true), (12, 2, 15.00, true), (12, 3, 30.00, true), (12, 4, 30.00, true),
+(13, 1, 25.00, true), (13, 2, 15.00, true), (13, 3, 30.00, true), (13, 4, 30.00, true),
+(14, 1, 25.00, true), (14, 2, 15.00, true), (14, 3, 30.00, true), (14, 4, 30.00, true),
+(15, 1, 25.00, true), (15, 2, 15.00, true), (15, 3, 30.00, true), (15, 4, 30.00, true),
+(16, 1, 20.00, true), (16, 2, 15.00, true), (16, 3, 30.00, true), (16, 4, 35.00, true),
+(17, 1, 20.00, true), (17, 2, 15.00, true), (17, 3, 30.00, true), (17, 4, 35.00, true),
+(18, 1, 25.00, true), (18, 2, 15.00, true), (18, 3, 30.00, true), (18, 4, 30.00, true),
+(19, 1, 25.00, true), (19, 2, 15.00, true), (19, 3, 30.00, true), (19, 4, 30.00, true),
+(20, 1, 25.00, true), (20, 2, 15.00, true), (20, 3, 30.00, true), (20, 4, 30.00, true),
+(21, 1, 25.00, true), (21, 2, 15.00, true), (21, 3, 30.00, true), (21, 4, 30.00, true),
+(22, 1, 25.00, true), (22, 2, 15.00, true), (22, 3, 30.00, true), (22, 4, 30.00, true),
+(23, 1, 25.00, true), (23, 2, 15.00, true), (23, 3, 30.00, true), (23, 4, 30.00, true),
+(24, 1, 25.00, true), (24, 2, 15.00, true), (24, 3, 30.00, true), (24, 4, 30.00, true);
+
 -- Insert KRS Detail untuk mahasiswa TI (mengambil kelas semester 1)
 -- Mahasiswa 1-10 mengambil kelas TI-1A
 INSERT INTO krs_detail (id_krs, id_kelas, nilai_mutu, nilai_huruf, nilai_bobot, nilai_akhir) VALUES
@@ -96,24 +140,28 @@ INSERT INTO krs_detail (id_krs, id_kelas, nilai_mutu, nilai_huruf, nilai_bobot, 
 (5, 7, 3.25, 'B+', 6.50, 81.0); -- Pancasila
 
 -- Insert data nilai detail untuk beberapa mahasiswa
-INSERT INTO nilai (id_krs_detail, jenis, persentase, nilai) VALUES
--- Mahasiswa 1, Mata Kuliah Algoritma
-(1, 'tugas', 20.00, 85.0),
-(1, 'quiz', 15.00, 88.0),
-(1, 'uts', 30.00, 84.0),
-(1, 'uas', 35.00, 86.0),
+-- Menggunakan id_aturan berdasarkan aturan_penilaian yang sudah dibuat
+-- Aturan untuk Kelas 1 (Algoritma TI-1A): id_aturan 1-4 (tugas, quiz, uts, uas)
+-- Aturan untuk Kelas 3 (Matematika): id_aturan 9-12
 
--- Mahasiswa 1, Mata Kuliah Matematika Diskrit
-(2, 'tugas', 25.00, 80.0),
-(2, 'quiz', 15.00, 85.0),
-(2, 'uts', 30.00, 82.0),
-(2, 'uas', 30.00, 83.0),
+INSERT INTO nilai (id_krs_detail, id_aturan, nilai) VALUES
+-- Mahasiswa 1, Mata Kuliah Algoritma (krs_detail id=1, kelas id=1)
+(1, 1, 85.0), -- Tugas (id_aturan 1: kelas 1, jenis 1)
+(1, 2, 88.0), -- Quiz (id_aturan 2: kelas 1, jenis 2)
+(1, 3, 84.0), -- UTS (id_aturan 3: kelas 1, jenis 3)
+(1, 4, 86.0), -- UAS (id_aturan 4: kelas 1, jenis 4)
 
--- Mahasiswa 2, Mata Kuliah Algoritma
-(7, 'tugas', 20.00, 82.0),
-(7, 'quiz', 15.00, 85.0),
-(7, 'uts', 30.00, 80.0),
-(7, 'uas', 35.00, 84.0);
+-- Mahasiswa 1, Mata Kuliah Matematika Diskrit (krs_detail id=2, kelas id=3)
+(2, 9, 80.0), -- Tugas (id_aturan 9: kelas 3, jenis 1)
+(2, 10, 85.0), -- Quiz (id_aturan 10: kelas 3, jenis 2)
+(2, 11, 82.0), -- UTS (id_aturan 11: kelas 3, jenis 3)
+(2, 12, 83.0), -- UAS (id_aturan 12: kelas 3, jenis 4)
+
+-- Mahasiswa 2, Mata Kuliah Algoritma TI-1B (krs_detail id=7, kelas id=2)
+(7, 5, 82.0), -- Tugas (id_aturan 5: kelas 2, jenis 1)
+(7, 6, 85.0), -- Quiz (id_aturan 6: kelas 2, jenis 2)
+(7, 7, 80.0), -- UTS (id_aturan 7: kelas 2, jenis 3)
+(7, 8, 84.0); -- UAS (id_aturan 8: kelas 2, jenis 4)
 
 -- Insert Transkrip untuk beberapa mahasiswa
 INSERT INTO transkrip (id_registrasi, total_sks, ipk) VALUES

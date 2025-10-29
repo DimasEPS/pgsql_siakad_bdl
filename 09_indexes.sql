@@ -20,12 +20,13 @@ CREATE INDEX IF NOT EXISTS idx_dosen_nama ON dosen(nama);
 CREATE INDEX IF NOT EXISTS idx_dosen_user ON dosen(id_user);
 
 -- Index untuk tabel registrasi
+-- UPDATED: id_status now references status_mahasiswa table
 CREATE INDEX IF NOT EXISTS idx_registrasi_npm ON registrasi(npm);
 CREATE INDEX IF NOT EXISTS idx_registrasi_mahasiswa ON registrasi(id_mahasiswa);
 CREATE INDEX IF NOT EXISTS idx_registrasi_prodi ON registrasi(id_prodi);
 CREATE INDEX IF NOT EXISTS idx_registrasi_dosen_pa ON registrasi(id_dosen_pa);
 CREATE INDEX IF NOT EXISTS idx_registrasi_angkatan ON registrasi(angkatan);
-CREATE INDEX IF NOT EXISTS idx_registrasi_status ON registrasi(status);
+CREATE INDEX IF NOT EXISTS idx_registrasi_status ON registrasi(id_status);
 CREATE INDEX IF NOT EXISTS idx_registrasi_tanggal ON registrasi(tanggal_registerasi);
 
 -- Index untuk tabel mata_kuliah
@@ -56,7 +57,7 @@ CREATE INDEX IF NOT EXISTS idx_krs_detail_nilai_akhir ON krs_detail(nilai_akhir)
 CREATE INDEX IF NOT EXISTS idx_jadwal_dosen ON jadwal(id_dosen);
 CREATE INDEX IF NOT EXISTS idx_jadwal_ruang ON jadwal(id_ruang);
 CREATE INDEX IF NOT EXISTS idx_jadwal_kelas ON jadwal(id_kelas);
-CREATE INDEX IF NOT EXISTS idx_jadwal_hari ON jadwal(hari);
+CREATE INDEX IF NOT EXISTS idx_jadwal_hari_fk ON jadwal(id_hari);
 CREATE INDEX IF NOT EXISTS idx_jadwal_waktu ON jadwal(waktu_mulai, waktu_selesai);
 
 -- Index untuk tabel pengajar
@@ -65,7 +66,7 @@ CREATE INDEX IF NOT EXISTS idx_pengajar_kelas ON pengajar(id_kelas);
 
 -- Index untuk tabel nilai
 CREATE INDEX IF NOT EXISTS idx_nilai_krs_detail ON nilai(id_krs_detail);
-CREATE INDEX IF NOT EXISTS idx_nilai_jenis ON nilai(jenis);
+CREATE INDEX IF NOT EXISTS idx_nilai_aturan_fk ON nilai(id_aturan);
 CREATE INDEX IF NOT EXISTS idx_nilai_nilai ON nilai(nilai);
 
 -- Index untuk tabel semester
@@ -83,7 +84,7 @@ CREATE INDEX IF NOT EXISTS idx_jurusan_fakultas ON jurusan(id_fakultas);
 
 -- Index untuk tabel prodi
 CREATE INDEX IF NOT EXISTS idx_prodi_nama ON prodi(nama_prodi);
-CREATE INDEX IF NOT EXISTS idx_prodi_jenjang ON prodi(jenjang);
+CREATE INDEX IF NOT EXISTS idx_prodi_jenjang_fk ON prodi(id_jenjang);
 CREATE INDEX IF NOT EXISTS idx_prodi_jurusan ON prodi(id_jurusan);
 
 -- Index untuk tabel ruang
@@ -108,7 +109,7 @@ CREATE INDEX IF NOT EXISTS idx_presensi_pertemuan_ke ON presensi_pertemuan(perte
 -- Index untuk tabel presensi_mahasiswa
 CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_pertemuan ON presensi_mahasiswa(id_pertemuan);
 CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_mahasiswa ON presensi_mahasiswa(id_mahasiswa);
-CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_status ON presensi_mahasiswa(status_kehadiran);
+CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_status_fk ON presensi_mahasiswa(id_status);
 CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_waktu ON presensi_mahasiswa(waktu_absen);
 
 -- Index untuk tabel kuesioner
@@ -131,18 +132,37 @@ CREATE INDEX IF NOT EXISTS idx_respon_tanggal ON respon_kuesioner(tanggal_respon
 -- Index komposit untuk query yang sering digunakan
 CREATE INDEX IF NOT EXISTS idx_krs_registrasi_semester ON krs(id_registrasi, id_semester);
 CREATE INDEX IF NOT EXISTS idx_krs_detail_krs_kelas ON krs_detail(id_krs, id_kelas);
-CREATE INDEX IF NOT EXISTS idx_jadwal_hari_waktu ON jadwal(hari, waktu_mulai, waktu_selesai);
+CREATE INDEX IF NOT EXISTS idx_jadwal_hari_waktu ON jadwal(id_hari, waktu_mulai, waktu_selesai);
 CREATE INDEX IF NOT EXISTS idx_mahasiswa_prodi_angkatan ON registrasi(id_prodi, angkatan);
-CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_pertemuan_status ON presensi_mahasiswa(id_pertemuan, id_mahasiswa, status_kehadiran);
+CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_pertemuan_status ON presensi_mahasiswa(id_pertemuan, id_mahasiswa, id_status);
 
 -- Index untuk pencarian berdasarkan tanggal
 CREATE INDEX IF NOT EXISTS idx_mata_kuliah_tanggal_dibuat ON mata_kuliah(tanggal_dibuat);
 CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
 
 -- Index partial untuk data aktif
-CREATE INDEX IF NOT EXISTS idx_registrasi_aktif ON registrasi(id_mahasiswa, id_prodi) WHERE status = 'aktif';
+-- UPDATED: Uses id_status = 1 (Aktif) instead of status = 'aktif'
+CREATE INDEX IF NOT EXISTS idx_registrasi_aktif ON registrasi(id_mahasiswa, id_prodi) WHERE id_status = 1;
 CREATE INDEX IF NOT EXISTS idx_kuesioner_aktif_periode ON kuesioner(tanggal_mulai, tanggal_selesai) WHERE aktif = true;
 CREATE INDEX IF NOT EXISTS idx_users_active ON users(id_user, id_role) WHERE deleted_at IS NULL;
+
+-- Indexes for new lookup tables
+CREATE INDEX IF NOT EXISTS idx_hari_nama ON hari(nama_hari);
+CREATE INDEX IF NOT EXISTS idx_jenjang_kode ON jenjang(kode);
+CREATE INDEX IF NOT EXISTS idx_jenjang_nama ON jenjang(nama_jenjang);
+CREATE INDEX IF NOT EXISTS idx_status_mahasiswa_kode ON status_mahasiswa(kode);
+CREATE INDEX IF NOT EXISTS idx_status_mahasiswa_nama ON status_mahasiswa(nama_status);
+CREATE INDEX IF NOT EXISTS idx_status_kehadiran_nama ON status_kehadiran(nama_status);
+CREATE INDEX IF NOT EXISTS idx_jenis_nilai_nama ON jenis_nilai(nama_nilai);
+
+-- Indexes for new foreign key relationships
+CREATE INDEX IF NOT EXISTS idx_jadwal_hari ON jadwal(id_hari);
+CREATE INDEX IF NOT EXISTS idx_prodi_jenjang ON prodi(id_jenjang);
+CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_status ON presensi_mahasiswa(id_status);
+CREATE INDEX IF NOT EXISTS idx_aturan_penilaian_kelas ON aturan_penilaian(id_kelas);
+CREATE INDEX IF NOT EXISTS idx_aturan_penilaian_jenis ON aturan_penilaian(id_jenis_nilai);
+CREATE INDEX IF NOT EXISTS idx_aturan_penilaian_aktif ON aturan_penilaian(id_kelas, aktif) WHERE aktif = true;
+CREATE INDEX IF NOT EXISTS idx_nilai_aturan ON nilai(id_aturan);
 
 -- Enable pg_trgm extension for full-text search
 CREATE EXTENSION IF NOT EXISTS pg_trgm;

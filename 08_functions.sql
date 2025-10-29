@@ -87,9 +87,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Function untuk mendapatkan jadwal mahasiswa berdasarkan semester
+-- UPDATED: Returns nama_hari (VARCHAR) instead of hari_enum
 CREATE OR REPLACE FUNCTION get_jadwal_mahasiswa(p_id_mahasiswa INT, p_id_semester INT)
 RETURNS TABLE (
-    hari hari_enum,
+    nama_hari VARCHAR(255),
     waktu_mulai TIME,
     waktu_selesai TIME,
     kode_mk VARCHAR(10),
@@ -101,7 +102,7 @@ RETURNS TABLE (
 BEGIN
     RETURN QUERY
     SELECT 
-        j.hari,
+        h.nama_hari::VARCHAR(255),
         j.waktu_mulai,
         j.waktu_selesai,
         mk.kode_mk,
@@ -110,6 +111,7 @@ BEGIN
         ru.nama_ruang,
         d.nama as nama_dosen
     FROM jadwal j
+    JOIN hari h ON j.id_hari = h.id_hari
     JOIN kelas k ON j.id_kelas = k.id_kelas
     JOIN mata_kuliah mk ON k.id_mk = mk.id_mk
     JOIN ruang ru ON j.id_ruang = ru.id_ruang
@@ -120,17 +122,18 @@ BEGIN
     WHERE r.id_mahasiswa = p_id_mahasiswa
     AND kr.id_semester = p_id_semester
     AND kr.status_validasi = true
-    ORDER BY j.hari, j.waktu_mulai;
+    ORDER BY j.id_hari, j.waktu_mulai;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Function untuk mendapatkan daftar mahasiswa dalam kelas
+-- UPDATED: Returns nama_status (VARCHAR) instead of status_enum
 CREATE OR REPLACE FUNCTION get_mahasiswa_kelas(p_id_kelas INT)
 RETURNS TABLE (
     npm VARCHAR(20),
     nama VARCHAR(160),
     email VARCHAR(255),
-    status status_enum
+    nama_status VARCHAR(100)
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -138,9 +141,10 @@ BEGIN
         r.npm,
         m.nama,
         u.email,
-        r.status
+        sm.nama_status::VARCHAR(100)
     FROM mahasiswa m
     JOIN registrasi r ON m.id_mahasiswa = r.id_mahasiswa
+    JOIN status_mahasiswa sm ON r.id_status = sm.id_status
     JOIN krs kr ON r.id_registrasi = kr.id_registrasi
     JOIN krs_detail kd ON kr.id_krs = kd.id_krs
     JOIN users u ON m.id_user = u.id_user
@@ -151,6 +155,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Function untuk menghitung persentase kehadiran mahasiswa
+-- UPDATED: Uses id_status = 1 (Hadir) instead of status_kehadiran = 'hadir'
 CREATE OR REPLACE FUNCTION get_persentase_kehadiran(p_id_mahasiswa INT, p_id_kelas INT)
 RETURNS NUMERIC(5,2) AS $$
 DECLARE
@@ -165,7 +170,7 @@ BEGIN
     JOIN jadwal j ON pp.id_jadwal = j.id_jadwal
     WHERE j.id_kelas = p_id_kelas;
     
-    -- Hitung jumlah kehadiran mahasiswa
+    -- Hitung jumlah kehadiran mahasiswa (id_status = 1 untuk Hadir)
     SELECT COUNT(*)
     INTO hadir_count
     FROM presensi_mahasiswa pm
@@ -173,7 +178,7 @@ BEGIN
     JOIN jadwal j ON pp.id_jadwal = j.id_jadwal
     WHERE j.id_kelas = p_id_kelas
     AND pm.id_mahasiswa = p_id_mahasiswa
-    AND pm.status_kehadiran = 'hadir';
+    AND pm.id_status = 1;
     
     IF total_pertemuan > 0 THEN
         persentase := (hadir_count::NUMERIC / total_pertemuan::NUMERIC) * 100;
@@ -233,6 +238,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Function untuk validasi KRS (cek bentrok jadwal)
+-- UPDATED: Uses id_hari instead of hari enum
 CREATE OR REPLACE FUNCTION validasi_krs_bentrok(p_id_krs INT)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -241,19 +247,19 @@ BEGIN
     SELECT COUNT(*)
     INTO bentrok_count
     FROM (
-        SELECT j1.hari, j1.waktu_mulai, j1.waktu_selesai
+        SELECT j1.id_hari, j1.waktu_mulai, j1.waktu_selesai
         FROM krs_detail kd1
         JOIN kelas k1 ON kd1.id_kelas = k1.id_kelas
         JOIN jadwal j1 ON k1.id_kelas = j1.id_kelas
         WHERE kd1.id_krs = p_id_krs
     ) AS jadwal1
     JOIN (
-        SELECT j2.hari, j2.waktu_mulai, j2.waktu_selesai
+        SELECT j2.id_hari, j2.waktu_mulai, j2.waktu_selesai
         FROM krs_detail kd2
         JOIN kelas k2 ON kd2.id_kelas = k2.id_kelas
         JOIN jadwal j2 ON k2.id_kelas = j2.id_kelas
         WHERE kd2.id_krs = p_id_krs
-    ) AS jadwal2 ON jadwal1.hari = jadwal2.hari
+    ) AS jadwal2 ON jadwal1.id_hari = jadwal2.id_hari
     WHERE (jadwal1.waktu_mulai < jadwal2.waktu_selesai 
            AND jadwal1.waktu_selesai > jadwal2.waktu_mulai)
     AND NOT (jadwal1.waktu_mulai = jadwal2.waktu_mulai 

@@ -51,7 +51,7 @@ ORDER BY total_sks DESC;
 
 -- Test jadwal untuk mahasiswa ID 1 semester 1
 SELECT * FROM get_jadwal_mahasiswa(1, 1)
-ORDER BY hari, waktu_mulai;
+ORDER BY nama_hari, waktu_mulai;
 
 \echo ''
 \echo '5. FUNCTION: get_mahasiswa_kelas(id_kelas)'
