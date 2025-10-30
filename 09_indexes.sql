@@ -54,7 +54,7 @@ CREATE INDEX IF NOT EXISTS idx_krs_detail_nilai_huruf ON krs_detail(nilai_huruf)
 CREATE INDEX IF NOT EXISTS idx_krs_detail_nilai_akhir ON krs_detail(nilai_akhir);
 
 -- Index untuk tabel jadwal
-CREATE INDEX IF NOT EXISTS idx_jadwal_dosen ON jadwal(id_dosen);
+-- SCHEMA UPDATE: Removed idx_jadwal_dosen since jadwal.id_dosen no longer exists
 CREATE INDEX IF NOT EXISTS idx_jadwal_ruang ON jadwal(id_ruang);
 CREATE INDEX IF NOT EXISTS idx_jadwal_kelas ON jadwal(id_kelas);
 CREATE INDEX IF NOT EXISTS idx_jadwal_hari_fk ON jadwal(id_hari);
@@ -107,8 +107,9 @@ CREATE INDEX IF NOT EXISTS idx_presensi_pertemuan_tanggal ON presensi_pertemuan(
 CREATE INDEX IF NOT EXISTS idx_presensi_pertemuan_ke ON presensi_pertemuan(pertemuan_ke);
 
 -- Index untuk tabel presensi_mahasiswa
+-- SCHEMA UPDATE: Changed id_mahasiswa to id_registrasi
 CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_pertemuan ON presensi_mahasiswa(id_pertemuan);
-CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_mahasiswa ON presensi_mahasiswa(id_mahasiswa);
+CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_registrasi ON presensi_mahasiswa(id_registrasi);
 CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_status_fk ON presensi_mahasiswa(id_status);
 CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_waktu ON presensi_mahasiswa(waktu_absen);
 
@@ -122,19 +123,21 @@ CREATE INDEX IF NOT EXISTS idx_pertanyaan_kuesioner ON pertanyaan_kuesioner(id_k
 CREATE INDEX IF NOT EXISTS idx_pertanyaan_tipe ON pertanyaan_kuesioner(tipe_jawaban);
 
 -- Index untuk tabel respon_kuesioner
+-- SCHEMA UPDATE: Changed id_mahasiswa to id_registrasi
 CREATE INDEX IF NOT EXISTS idx_respon_pertanyaan ON respon_kuesioner(id_pertanyaan);
-CREATE INDEX IF NOT EXISTS idx_respon_mahasiswa ON respon_kuesioner(id_mahasiswa);
+CREATE INDEX IF NOT EXISTS idx_respon_registrasi ON respon_kuesioner(id_registrasi);
 CREATE INDEX IF NOT EXISTS idx_respon_dosen ON respon_kuesioner(id_dosen);
 CREATE INDEX IF NOT EXISTS idx_respon_kelas ON respon_kuesioner(id_kelas);
 CREATE INDEX IF NOT EXISTS idx_respon_semester ON respon_kuesioner(id_semester);
 CREATE INDEX IF NOT EXISTS idx_respon_tanggal ON respon_kuesioner(tanggal_respon);
 
 -- Index komposit untuk query yang sering digunakan
+-- SCHEMA UPDATE: Changed id_mahasiswa to id_registrasi in composite index
 CREATE INDEX IF NOT EXISTS idx_krs_registrasi_semester ON krs(id_registrasi, id_semester);
 CREATE INDEX IF NOT EXISTS idx_krs_detail_krs_kelas ON krs_detail(id_krs, id_kelas);
 CREATE INDEX IF NOT EXISTS idx_jadwal_hari_waktu ON jadwal(id_hari, waktu_mulai, waktu_selesai);
 CREATE INDEX IF NOT EXISTS idx_mahasiswa_prodi_angkatan ON registrasi(id_prodi, angkatan);
-CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_pertemuan_status ON presensi_mahasiswa(id_pertemuan, id_mahasiswa, id_status);
+CREATE INDEX IF NOT EXISTS idx_presensi_mahasiswa_pertemuan_status ON presensi_mahasiswa(id_pertemuan, id_registrasi, id_status);
 
 -- Index untuk pencarian berdasarkan tanggal
 CREATE INDEX IF NOT EXISTS idx_mata_kuliah_tanggal_dibuat ON mata_kuliah(tanggal_dibuat);

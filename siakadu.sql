@@ -17,41 +17,58 @@ CREATE TABLE "dosen" (
   "id_dosen" SERIAL PRIMARY KEY NOT NULL,
   "nama" varchar(160) NOT NULL,
   "nidn" varchar(15) UNIQUE NOT NULL,
-  "id_user" int4 UNIQUE NOT NULL
+  "id_user" int4 UNIQUE NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "fakultas" (
   "id_fakultas" SERIAL PRIMARY KEY NOT NULL,
   "kode_fakultas" varchar(10) UNIQUE NOT NULL,
-  "nama_fakultas" varchar(100) NOT NULL
+  "nama_fakultas" varchar(100) NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "gedung" (
   "id_gedung" SERIAL PRIMARY KEY NOT NULL,
   "nama_gedung" varchar(50) NOT NULL,
-  "alamat" varchar(255) NOT NULL
+  "alamat" varchar(255) NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "hari" (
   "id_hari" SERIAL PRIMARY KEY NOT NULL,
-  "nama_hari" varchar(255) NOT NULL
+  "nama_hari" varchar(255) NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "jadwal" (
   "id_jadwal" SERIAL PRIMARY KEY NOT NULL,
   "id_hari" int4 NOT NULL,
-  "id_dosen" int4,
   "id_ruang" int4 NOT NULL,
   "waktu_mulai" time(6) NOT NULL,
   "waktu_selesai" time(6) NOT NULL,
-  "id_kelas" int4 NOT NULL
+  "id_kelas" int4 NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "jurusan" (
   "id_jurusan" SERIAL PRIMARY KEY NOT NULL,
   "kode_jurusan" varchar(10) UNIQUE NOT NULL,
   "nama_jurusan" varchar(100) NOT NULL,
-  "id_fakultas" int4 NOT NULL
+  "id_fakultas" int4 NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "kelas" (
@@ -60,7 +77,10 @@ CREATE TABLE "kelas" (
   "id_semester" int4 NOT NULL,
   "id_prodi" int4 NOT NULL,
   "kapasitas_kelas" int4 NOT NULL,
-  "nama_kelas" varchar(10) NOT NULL
+  "nama_kelas" varchar(10) NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "krs" (
@@ -68,7 +88,9 @@ CREATE TABLE "krs" (
   "id_registrasi" int4 NOT NULL,
   "id_semester" int4 NOT NULL,
   "tanggal_pengajuan" date NOT NULL DEFAULT (CURRENT_DATE),
-  "status_validasi" bool NOT NULL DEFAULT false
+  "status_validasi" bool NOT NULL DEFAULT false,
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "krs_detail" (
@@ -78,7 +100,10 @@ CREATE TABLE "krs_detail" (
   "nilai_mutu" numeric(3,2),
   "nilai_huruf" nilai_huruf_enum,
   "nilai_bobot" numeric(4,2),
-  "nilai_akhir" numeric(5,2)
+  "nilai_akhir" numeric(5,2),
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "mahasiswa" (
@@ -87,7 +112,10 @@ CREATE TABLE "mahasiswa" (
   "nik" varchar(20) UNIQUE NOT NULL,
   "tanggal_lahir" date NOT NULL,
   "alamat" text,
-  "id_user" int4 UNIQUE NOT NULL
+  "id_user" int4 UNIQUE NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "mata_kuliah" (
@@ -96,19 +124,27 @@ CREATE TABLE "mata_kuliah" (
   "kode_mk" varchar(10) UNIQUE NOT NULL,
   "nama_mk" varchar(100) NOT NULL,
   "sks" int2 NOT NULL,
-  "tanggal_dibuat" timestamp(6) NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+  "tanggal_dibuat" timestamp(6) NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "nilai" (
   "id_nilai" SERIAL PRIMARY KEY NOT NULL,
   "id_krs_detail" int4 NOT NULL,
   "nilai" numeric(5,2) NOT NULL,
-  "id_aturan" int4 NOT NULL
+  "id_aturan" int4 NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "jenis_nilai" (
   "id_jenis_nilai" SERIAL PRIMARY KEY,
-  "nama_nilai" varchar(50) NOT NULL
+  "nama_nilai" varchar(50) NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "aturan_penilaian" (
@@ -116,13 +152,19 @@ CREATE TABLE "aturan_penilaian" (
   "id_kelas" int4 NOT NULL,
   "id_jenis_nilai" int4 NOT NULL,
   "persentase" numeric(5,2) NOT NULL,
-  "aktif" boolean DEFAULT true
+  "aktif" boolean DEFAULT true,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "pengajar" (
   "id_pengajar" SERIAL PRIMARY KEY NOT NULL,
   "id_dosen" int4 NOT NULL,
-  "id_kelas" int4 NOT NULL
+  "id_kelas" int4 NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "prodi" (
@@ -135,7 +177,10 @@ CREATE TABLE "prodi" (
 CREATE TABLE "jenjang" (
   "id_jenjang" SERIAL PRIMARY KEY NOT NULL,
   "kode" varchar(5) NOT NULL,
-  "nama_jenjang" varchar(100) NOT NULL
+  "nama_jenjang" varchar(100) NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "registrasi" (
@@ -146,39 +191,56 @@ CREATE TABLE "registrasi" (
   "npm" varchar(20) NOT NULL,
   "angkatan" int4 NOT NULL,
   "id_status" int4 NOT NULL,
-  "tanggal_registerasi" timestamp(6) NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+  "tanggal_registerasi" timestamp(6) NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "status_mahasiswa" (
   "id_status" SERIAL PRIMARY KEY NOT NULL,
   "kode" varchar(5) NOT NULL,
-  "nama_status" varchar(100) NOT NULL
+  "nama_status" varchar(100) NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "role" (
   "id_role" SERIAL PRIMARY KEY NOT NULL,
   "nama_role" varchar(50) UNIQUE NOT NULL,
-  "deskripsi" text
+  "deskripsi" text,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "ruang" (
   "id_ruang" SERIAL PRIMARY KEY NOT NULL,
   "nama_ruang" varchar(10) NOT NULL,
   "kapasitas_ruang" int4 NOT NULL,
-  "id_gedung" int4 NOT NULL
+  "id_gedung" int4 NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "semester" (
   "id_semester" SERIAL PRIMARY KEY NOT NULL,
   "tahun_ajaran" varchar(9) NOT NULL,
-  "tipe_semester" semester_enum NOT NULL
+  "tipe_semester" semester_enum NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "transkrip" (
   "id_transkrip" SERIAL PRIMARY KEY NOT NULL,
   "id_registrasi" int4 UNIQUE NOT NULL,
   "total_sks" int2 NOT NULL,
-  "ipk" numeric(3,2) NOT NULL
+  "ipk" numeric(3,2) NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "users" (
@@ -197,20 +259,28 @@ CREATE TABLE "presensi_pertemuan" (
   "id_jadwal" int4 NOT NULL,
   "tanggal_pertemuan" date NOT NULL,
   "materi" text,
-  "pertemuan_ke" int4 NOT NULL
+  "pertemuan_ke" int4 NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "presensi_mahasiswa" (
   "id_presensi" SERIAL PRIMARY KEY,
   "id_pertemuan" int4 NOT NULL,
-  "id_mahasiswa" int4 NOT NULL,
+  "id_registrasi" int4 NOT NULL,
   "id_status" int4 NOT NULL,
-  "waktu_absen" timestamp(6) DEFAULT (CURRENT_TIMESTAMP)
+  "waktu_absen" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "status_kehadiran" (
   "id_status" SERIAL PRIMARY KEY,
-  "nama_status" varchar(50) NOT NULL
+  "nama_status" varchar(50) NOT NULL,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "kuesioner" (
@@ -219,25 +289,33 @@ CREATE TABLE "kuesioner" (
   "deskripsi" text,
   "aktif" bool DEFAULT true,
   "tanggal_mulai" date,
-  "tanggal_selesai" date
+  "tanggal_selesai" date,
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "pertanyaan_kuesioner" (
   "id_pertanyaan" SERIAL PRIMARY KEY,
   "id_kuesioner" int4 NOT NULL,
   "teks_pertanyaan" text NOT NULL,
-  "tipe_jawaban" varchar(20) NOT NULL DEFAULT 'skala'
+  "tipe_jawaban" varchar(20) NOT NULL DEFAULT 'skala',
+  "created_at" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 CREATE TABLE "respon_kuesioner" (
   "id_respon" SERIAL PRIMARY KEY,
   "id_pertanyaan" int4 NOT NULL,
-  "id_mahasiswa" int4 NOT NULL,
+  "id_registrasi" int4 NOT NULL,
   "id_dosen" int4 NOT NULL,
   "id_kelas" int4 NOT NULL,
   "id_semester" int4 NOT NULL,
   "jawaban" text NOT NULL,
-  "tanggal_respon" timestamp(6) DEFAULT (CURRENT_TIMESTAMP)
+  "tanggal_respon" timestamp(6) DEFAULT (CURRENT_TIMESTAMP),
+  "updated_at" timestamp(6),
+  "deleted_at" timestamp(6)
 );
 
 ALTER TABLE "dosen" ADD CONSTRAINT "fk_dosen_id_user" FOREIGN KEY ("id_user") REFERENCES "users" ("id_user") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -245,8 +323,6 @@ ALTER TABLE "dosen" ADD CONSTRAINT "fk_dosen_id_user" FOREIGN KEY ("id_user") RE
 ALTER TABLE "jadwal" ADD CONSTRAINT "fk_jadwal_id_hari" FOREIGN KEY ("id_hari") REFERENCES "hari" ("id_hari") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 ALTER TABLE "mata_kuliah" ADD CONSTRAINT "fk_mk_id_semester" FOREIGN KEY ("id_semester") REFERENCES "semester" ("id_semester");
-
-ALTER TABLE "jadwal" ADD CONSTRAINT "fk_jadwal_id_dosen" FOREIGN KEY ("id_dosen") REFERENCES "dosen" ("id_dosen");
 
 ALTER TABLE "jadwal" ADD CONSTRAINT "fk_jadwal_id_ruang" FOREIGN KEY ("id_ruang") REFERENCES "ruang" ("id_ruang") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
@@ -294,13 +370,13 @@ ALTER TABLE "presensi_pertemuan" ADD CONSTRAINT "fk_presensi_id_jadwal" FOREIGN 
 
 ALTER TABLE "presensi_mahasiswa" ADD CONSTRAINT "fk_presensi_id_pertemuan" FOREIGN KEY ("id_pertemuan") REFERENCES "presensi_pertemuan" ("id_pertemuan");
 
-ALTER TABLE "presensi_mahasiswa" ADD CONSTRAINT "fk_presensi_id_mahasiswa" FOREIGN KEY ("id_mahasiswa") REFERENCES "mahasiswa" ("id_mahasiswa");
+ALTER TABLE "presensi_mahasiswa" ADD CONSTRAINT "fk_presensi_id_mahasiswa" FOREIGN KEY ("id_registrasi") REFERENCES "registrasi" ("id_registrasi");
 
 ALTER TABLE "pertanyaan_kuesioner" ADD CONSTRAINT "fk_pertanyaan_id_kuesioner" FOREIGN KEY ("id_kuesioner") REFERENCES "kuesioner" ("id_kuesioner");
 
 ALTER TABLE "respon_kuesioner" ADD CONSTRAINT "fk_respon_id_pertanyaan" FOREIGN KEY ("id_pertanyaan") REFERENCES "pertanyaan_kuesioner" ("id_pertanyaan");
 
-ALTER TABLE "respon_kuesioner" ADD CONSTRAINT "fk_respon_id_mahasiswa" FOREIGN KEY ("id_mahasiswa") REFERENCES "mahasiswa" ("id_mahasiswa");
+ALTER TABLE "respon_kuesioner" ADD CONSTRAINT "fk_respon_id_mahasiswa" FOREIGN KEY ("id_registrasi") REFERENCES "registrasi" ("id_registrasi");
 
 ALTER TABLE "respon_kuesioner" ADD CONSTRAINT "fk_respon_id_dosen" FOREIGN KEY ("id_dosen") REFERENCES "dosen" ("id_dosen");
 

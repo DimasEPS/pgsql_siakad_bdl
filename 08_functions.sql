@@ -88,6 +88,7 @@ $$ LANGUAGE plpgsql;
 
 -- Function untuk mendapatkan jadwal mahasiswa berdasarkan semester
 -- UPDATED: Returns nama_hari (VARCHAR) instead of hari_enum
+-- SCHEMA UPDATE: Removed id_dosen from jadwal, now get dosen through pengajar table
 CREATE OR REPLACE FUNCTION get_jadwal_mahasiswa(p_id_mahasiswa INT, p_id_semester INT)
 RETURNS TABLE (
     nama_hari VARCHAR(255),
@@ -115,7 +116,8 @@ BEGIN
     JOIN kelas k ON j.id_kelas = k.id_kelas
     JOIN mata_kuliah mk ON k.id_mk = mk.id_mk
     JOIN ruang ru ON j.id_ruang = ru.id_ruang
-    JOIN dosen d ON j.id_dosen = d.id_dosen
+    JOIN pengajar p ON k.id_kelas = p.id_kelas
+    JOIN dosen d ON p.id_dosen = d.id_dosen
     JOIN krs_detail kd ON k.id_kelas = kd.id_kelas
     JOIN krs kr ON kd.id_krs = kr.id_krs
     JOIN registrasi r ON kr.id_registrasi = r.id_registrasi
@@ -156,6 +158,7 @@ $$ LANGUAGE plpgsql;
 
 -- Function untuk menghitung persentase kehadiran mahasiswa
 -- UPDATED: Uses id_status = 1 (Hadir) instead of status_kehadiran = 'hadir'
+-- SCHEMA UPDATE: Changed pm.id_mahasiswa to pm.id_registrasi
 CREATE OR REPLACE FUNCTION get_persentase_kehadiran(p_id_mahasiswa INT, p_id_kelas INT)
 RETURNS NUMERIC(5,2) AS $$
 DECLARE
@@ -176,8 +179,9 @@ BEGIN
     FROM presensi_mahasiswa pm
     JOIN presensi_pertemuan pp ON pm.id_pertemuan = pp.id_pertemuan
     JOIN jadwal j ON pp.id_jadwal = j.id_jadwal
+    JOIN registrasi r ON pm.id_registrasi = r.id_registrasi
     WHERE j.id_kelas = p_id_kelas
-    AND pm.id_mahasiswa = p_id_mahasiswa
+    AND r.id_mahasiswa = p_id_mahasiswa
     AND pm.id_status = 1;
     
     IF total_pertemuan > 0 THEN

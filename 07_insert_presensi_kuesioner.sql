@@ -28,12 +28,13 @@ INSERT INTO presensi_pertemuan (id_dosen, id_jadwal, tanggal_pertemuan, materi, 
 (3, 4, '2023-09-12', 'Gerbang Logika Dasar', 2),
 (3, 4, '2023-09-19', 'Aljabar Boolean', 3);
 
--- Insert Presensi Mahasiswa (updated to use id_status from status_kehadiran table)
+-- Insert Presensi Mahasiswa (updated to use id_registrasi instead of id_mahasiswa)
+-- SCHEMA UPDATE: Changed id_mahasiswa to id_registrasi
 -- Status Kehadiran: 1=Hadir, 2=Izin, 3=Sakit, 4=Alpa
-INSERT INTO presensi_mahasiswa (id_pertemuan, id_mahasiswa, id_status, waktu_absen) VALUES
--- Pertemuan 1 Algoritma TI-1A
-(1, 1, 1, '2023-09-04 08:05:00'), -- hadir
-(1, 3, 1, '2023-09-04 08:03:00'), -- hadir
+INSERT INTO presensi_mahasiswa (id_pertemuan, id_registrasi, id_status, waktu_absen) VALUES
+-- Pertemuan 1 Algoritma TI-1A (using id_registrasi instead of id_mahasiswa)
+(1, 1, 1, '2023-09-04 08:05:00'), -- hadir (registrasi 1 = mahasiswa 1)
+(1, 3, 1, '2023-09-04 08:03:00'), -- hadir (registrasi 3 = mahasiswa 3)
 (1, 5, 1, '2023-09-04 08:07:00'), -- hadir
 (1, 7, 1, '2023-09-04 08:10:00'), -- hadir
 (1, 9, 2, '2023-09-04 08:00:00'), -- izin
@@ -92,21 +93,22 @@ INSERT INTO pertanyaan_kuesioner (id_kuesioner, teks_pertanyaan, tipe_jawaban) V
 (3, 'Seberapa mudah proses administrasi akademik?', 'skala');
 
 -- Insert Respon Kuesioner
-INSERT INTO respon_kuesioner (id_pertanyaan, id_mahasiswa, id_dosen, id_kelas, id_semester, jawaban) VALUES
--- Respon mahasiswa untuk evaluasi pembelajaran Algoritma
-(1, 1, 1, 1, 1, '4'), -- Kemampuan dosen
+-- SCHEMA UPDATE: Changed id_mahasiswa to id_registrasi
+INSERT INTO respon_kuesioner (id_pertanyaan, id_registrasi, id_dosen, id_kelas, id_semester, jawaban) VALUES
+-- Respon mahasiswa untuk evaluasi pembelajaran Algoritma (using id_registrasi)
+(1, 1, 1, 1, 1, '4'), -- Kemampuan dosen (registrasi 1 = mahasiswa 1)
 (2, 1, 1, 1, 1, '4'), -- Kejelasan materi
 (3, 1, 1, 1, 1, '5'), -- Kesempatan bertanya
 (4, 1, 1, 1, 1, '4'), -- Kesesuaian silabus
 (5, 1, 1, 1, 1, '4'), -- Manfaat tugas
 
-(1, 2, 1, 2, 1, '3'), -- Kemampuan dosen
+(1, 2, 1, 2, 1, '3'), -- Kemampuan dosen (registrasi 2 = mahasiswa 2)
 (2, 2, 1, 2, 1, '4'), -- Kejelasan materi
 (3, 2, 1, 2, 1, '4'), -- Kesempatan bertanya
 (4, 2, 1, 2, 1, '3'), -- Kesesuaian silabus
 (5, 2, 1, 2, 1, '4'), -- Manfaat tugas
 
-(1, 3, 1, 1, 1, '5'), -- Kemampuan dosen
+(1, 3, 1, 1, 1, '5'), -- Kemampuan dosen (registrasi 3 = mahasiswa 3)
 (2, 3, 1, 1, 1, '5'), -- Kejelasan materi
 (3, 3, 1, 1, 1, '5'), -- Kesempatan bertanya
 (4, 3, 1, 1, 1, '4'), -- Kesesuaian silabus
